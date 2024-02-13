@@ -3,8 +3,12 @@
 import { useRouter } from "next/navigation";
 import { twMerge } from "tailwind-merge";
 import { RxCaretLeft, RxCaretRight } from "react-icons/rx"
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { FaUserAlt } from "react-icons/fa";
 import { HiHome } from "react-icons/hi"
 import { BiSearch } from "react-icons/bi";
+import useAuthModal from "@/hooks/useAuthModal";
+import { useUser } from "@/hooks/useUser";
 import Button from "./Button";
 
 interface HeaderProps {
@@ -16,10 +20,23 @@ const Header: React.FC<HeaderProps> = ({
     children, className
 }) => {
 
+    const { onOpen } = useAuthModal();
+    const router = useRouter();
 
-    const Router = useRouter();
-    const handlelogout = () => {
-        localStorage.removeItem("token");
+    const supabaseClient = useSupabaseClient();
+    const { user } = useUser();
+
+    const handlelogout = async () => {
+
+        const { error } = await supabaseClient.auth.signOut();
+        //   TODO: Reset any playing songs
+
+        router.refresh();
+
+        if (error) {
+            console.log(error);
+
+        }
     }
 
     return (
@@ -28,10 +45,10 @@ const Header: React.FC<HeaderProps> = ({
             <div className="w-full nb-4 flex items-center justify-between" >
                 <div className="hidden md:flex gap-x-2 items-center">
 
-                    <button onClick={() => Router.back()} className="rounded-full bg-black flex items-center justify-center hover:opacity-75 transition">
+                    <button onClick={() => router.back()} className="rounded-full bg-black flex items-center justify-center hover:opacity-75 transition">
                         <RxCaretLeft className="text-white" size={35} />
                     </button>
-                    <button onClick={() => Router.forward()} className="rounded-full bg-black flex items-center justify-center hover:opacity-75 transition">
+                    <button onClick={() => router.forward()} className="rounded-full bg-black flex items-center justify-center hover:opacity-75 transition">
                         <RxCaretRight className="text-white" size={35} />
                     </button>
                 </div>
@@ -47,18 +64,44 @@ const Header: React.FC<HeaderProps> = ({
                 </div>
 
                 <div className="flex justify-between items-center gap-x-4 ">
-                    <>
-                        <div>
-                            <Button
-                                onClick={() => { }}
-                                className="bg-transparent text-neutral-300 font-medium">Sign up </Button>
-                        </div>
 
-                        <div>
-                            <Button className="bg-white px-6 py-2">Sign in </Button>
-                        </div>
-                    </>
+                    {
+                        user ? (<div
+                            className="flex gap-x-4 items-center"
+                        >
+                            <Button className="bg-white px-6 py-2" onClick={handlelogout}>
+                                Loggout
+                            </Button>
 
+                            <Button className="bg-white " onClick={() => router.push('/account')}>
+                                <FaUserAlt />
+                            </Button>
+                        </div>) : (
+                            <>
+                                <div>
+                                    <Button
+                                        onClick={onOpen}
+                                        className="
+                    bg-transparent 
+                    text-neutral-300 
+                    font-medium
+                  "
+                                    >
+                                        Sign up
+                                    </Button>
+                                </div>
+                                <div>
+                                    <Button
+                                        onClick={onOpen}
+                                        className="bg-white px-6 py-2"
+                                    >
+                                        Log in
+                                    </Button>
+                                </div>
+                            </>
+                        )
+
+                    }
                 </div>
 
             </div>
