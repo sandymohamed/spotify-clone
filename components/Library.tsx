@@ -5,12 +5,14 @@ import { AiOutlinePlus } from "react-icons/ai";
 
 import useAuthModal from "@/hooks/useAuthModal";
 import { useUser } from "@/hooks/useUser";
+import useUploadModal from "@/hooks/useUploadModal";
 
 
 
 const Library = () => {
 
     const authModal = useAuthModal();
+    const UploadModal = useUploadModal()
     const { user } = useUser();
 
 
@@ -18,7 +20,11 @@ const Library = () => {
         if(!user) {
             return authModal.onOpen();
         }
-        alert("You clicked me!");
+        
+        // TODO: check for subscripion
+        
+        return UploadModal.onOpen();
+
     }
 
 
