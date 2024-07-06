@@ -7,6 +7,7 @@ import useAuthModal from "@/hooks/useAuthModal";
 import { useUser } from "@/hooks/useUser";
 import useUploadModal from "@/hooks/useUploadModal";
 import { Song } from "@/types";
+import MediaItem from "./MediaItem";
 
 
 interface LibraryProp {
@@ -50,10 +51,13 @@ const Library: React.FC<LibraryProp> = ({ songs }) => {
             <div className=" flex  flex-col  gap-y-2  mt-4 px-3 "   >
                 {
                     songs.map((item) => (
-                        <div key={item.id}>{item.title}</div>
+                        <MediaItem
+                            onClick={() => { }}
+                            key={item.id}
+                            data={item}
+                        />
                     ))
                 }
-                ******* min : 3:21 *******
             </div>
         </div>
 
